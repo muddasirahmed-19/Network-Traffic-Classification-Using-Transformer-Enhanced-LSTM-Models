@@ -73,7 +73,7 @@ def compute_metrics(y_true, y_pred, y_prob) -> dict:
     }
 
 
-def plot_confusion_matrix(y_true, y_pred, save_path, class_names=("NonTor", "Tor")):
+def plot_confusion_matrix(y_true, y_pred, save_path, class_names=("NonTor", "Tor"), also_save_as=None):
     cm = confusion_matrix(y_true, y_pred)
     plt.figure(figsize=(5, 4))
     sns.heatmap(
@@ -85,11 +85,21 @@ def plot_confusion_matrix(y_true, y_pred, save_path, class_names=("NonTor", "Tor
     plt.title("Confusion Matrix")
     plt.tight_layout()
     plt.savefig(save_path, dpi=150)
+    if also_save_as:
+        # Also save under the exact filename the CEP's repo structure
+        # specifies (results/confusion_matrix.png), in addition to the
+        # descriptive per-model/per-dataset filename above. The CEP's
+        # tree only lists one confusion_matrix.png, which only makes
+        # sense for one designated model -- this copy is for the
+        # proposed Transformer-LSTM model specifically (see --primary
+        # flag in main()).
+        plt.savefig(also_save_as, dpi=150)
+        print(f"[plot] Also saved as CEP-specified filename: {also_save_as}")
     plt.close()
     print(f"[plot] Saved confusion matrix to {save_path}")
 
 
-def plot_training_curves(history_path, model_name, dataset_name, figures_dir):
+def plot_training_curves(history_path, model_name, dataset_name, figures_dir, also_save_primary=False):
     """Only applicable to deep learning models, which have an epoch-by-epoch history."""
     if not os.path.exists(history_path):
         print(f"[plot] No training history found at {history_path}, skipping curves "
@@ -112,6 +122,12 @@ def plot_training_curves(history_path, model_name, dataset_name, figures_dir):
     plt.tight_layout()
     acc_path = os.path.join(figures_dir, f"{dataset_name}_{model_name}_accuracy_curve.png")
     plt.savefig(acc_path, dpi=150)
+    if also_save_primary:
+        # CEP-specified exact filename (figures/accuracy_curve.png) --
+        # see note in plot_confusion_matrix above.
+        primary_acc_path = os.path.join(figures_dir, "accuracy_curve.png")
+        plt.savefig(primary_acc_path, dpi=150)
+        print(f"[plot] Also saved as CEP-specified filename: {primary_acc_path}")
     plt.close()
     print(f"[plot] Saved accuracy curve to {acc_path}")
 
@@ -126,6 +142,10 @@ def plot_training_curves(history_path, model_name, dataset_name, figures_dir):
     plt.tight_layout()
     loss_path = os.path.join(figures_dir, f"{dataset_name}_{model_name}_loss_curve.png")
     plt.savefig(loss_path, dpi=150)
+    if also_save_primary:
+        primary_loss_path = os.path.join(figures_dir, "loss_curve.png")
+        plt.savefig(primary_loss_path, dpi=150)
+        print(f"[plot] Also saved as CEP-specified filename: {primary_loss_path}")
     plt.close()
     print(f"[plot] Saved loss curve to {loss_path}")
 
@@ -158,6 +178,17 @@ def main():
     parser.add_argument("--model_dir", default="../results/models")
     parser.add_argument("--results_dir", default="../results")
     parser.add_argument("--figures_dir", default="../figures")
+    parser.add_argument(
+        "--primary", action="store_true",
+        help="Also save this run's confusion matrix / accuracy curve / loss "
+             "curve under the exact filenames the CEP's repo structure "
+             "specifies (results/confusion_matrix.png, "
+             "figures/accuracy_curve.png, figures/loss_curve.png), in "
+             "addition to the descriptive per-model/per-dataset filenames. "
+             "Use this flag once, on your proposed model (transformer_lstm) "
+             "on your primary dataset, since the CEP's tree only lists one "
+             "of each file and isn't written with a 6-model comparison in mind.",
+    )
     args = parser.parse_args()
 
     data = load_processed_data(args.processed_dir, args.dataset)
@@ -169,10 +200,12 @@ def main():
         print(f"{k:>10}: {v:.4f}")
 
     cm_path = os.path.join(args.results_dir, f"{args.dataset}_{args.model}_confusion_matrix.png")
-    plot_confusion_matrix(y_true, y_pred, cm_path)
+    primary_cm_path = os.path.join(args.results_dir, "confusion_matrix.png") if args.primary else None
+    plot_confusion_matrix(y_true, y_pred, cm_path, also_save_as=primary_cm_path)
 
     history_path = os.path.join(args.model_dir, f"{args.dataset}_{args.model}_history.json")
-    plot_training_curves(history_path, args.model, args.dataset, args.figures_dir)
+    plot_training_curves(history_path, args.model, args.dataset, args.figures_dir,
+                          also_save_primary=args.primary)
 
     metrics_txt_path = os.path.join(args.results_dir, "metrics.txt")
     append_metrics_to_file(metrics, args.model, args.dataset, metrics_txt_path)
