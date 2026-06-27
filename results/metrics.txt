@@ -1,0 +1,14 @@
+Dataset        Model               Accuracy  Precision  Recall   F1       ROC-AUC  
+-------------------------------------------------------------------------------------
+darknet2020    logistic_regression 0.9979    0.9875     0.8927   0.9377   0.9844   
+darknet2020    svm                 0.9988    0.9825     0.9492   0.9655   0.9799   
+darknet2020    lstm_only           0.9993    1.0000     0.9605   0.9798   1.0000   
+darknet2020    cnn_only            0.9992    0.9942     0.9605   0.9770   1.0000   
+darknet2020    cnn_lstm            0.9993    0.9942     0.9661   0.9799   0.9999   
+darknet2020    transformer_lstm    0.9994    0.9831     0.9831   0.9831   1.0000   
+iscxtor2016    logistic_regression 0.9149    0.7883     0.7653   0.7767   0.9604   
+iscxtor2016    svm                 0.9181    0.8030     0.7639   0.7830   0.9585   
+iscxtor2016    lstm_only           0.9683    0.9307     0.9031   0.9167   0.9937   
+iscxtor2016    cnn_only            0.9695    0.9263     0.9151   0.9207   0.9940   
+iscxtor2016    cnn_lstm            0.9685    0.9341     0.9007   0.9171   0.9937   
+iscxtor2016    transformer_lstm    0.9721    0.9261     0.9300   0.9280   0.9949   
