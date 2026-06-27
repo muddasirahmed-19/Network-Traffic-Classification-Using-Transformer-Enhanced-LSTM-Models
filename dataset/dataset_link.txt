@@ -1,0 +1,44 @@
+# Dataset Links
+
+## 1. CIC-Darknet2020 (primary dataset)
+
+Official source (UNB CIC):
+https://www.unb.ca/cic/datasets/darknet2020.html
+
+Kaggle mirror (cleaned CSV, easiest to use):
+https://www.kaggle.com/datasets/dhoogla/cicdarknet2020
+
+Citation:
+Arash Habibi Lashkari, Gurdip Kaur, and Abir Rahali, "DIDarknet: A
+Contemporary Approach to Detect and Characterize the Darknet Traffic
+using Deep Image Learning", 10th International Conference on
+Communication and Network Security, Tokyo, Japan, November 2020.
+
+After downloading, place the CSV as:
+    dataset/raw/darknet2020.csv
+
+Expected columns include ~85 CICFlowMeter flow features plus:
+    Label    -> {Tor, NonTor, VPN, NonVPN}   (we map this to binary Tor/NonTor)
+    Label.1  -> application subtype (Browsing, Chat, Email, P2P, ...)
+
+
+## 2. ISCXTor2016 (Tor-nonTor) — second dataset
+
+Official source (UNB CIC):
+https://www.unb.ca/cic/datasets/tor.html
+
+Citation:
+Arash Habibi Lashkari, Gerard Draper-Gil, Mohammad Saiful Islam Mamun and
+Ali A. Ghorbani, "Characterization of Tor Traffic Using Time Based
+Features", In the proceedings of the 3rd International Conference on
+Information System Security and Privacy, SCITEPRESS, Porto, Portugal,
+2017.
+
+After downloading, place the CSV as:
+    dataset/raw/iscxtor2016.csv
+
+Note: CIC-Darknet2020 was built by combining ISCXTor2016 + ISCXVPN2016
+using the same flow-feature extractor, so both datasets share a very
+similar feature schema. This lets us reuse the same preprocessing
+pipeline (src/preprocessing.py) for both, with only column-name mapping
+differing between them.
